@@ -28,34 +28,62 @@ player_frame:     .res 1
 
   ; Acceleration to right: Do it only if the player is holding right
   ; on the Control Pad and has a nonnegative velocity.
-  lda cur_keys
+  lda new_keys
   and #KEY_RIGHT
   beq :+
 
     ; right is pressed
     lda player_facing  ; Set the facing direction to not flipped 
-    and #<~$40         ; turn off bit 6, leave all others on
+    ora #$40
     sta player_facing
+    lda player_x
+    clc
+    adc #$08
+    sta player_x
 
   :
 
-  lda cur_keys
+  lda new_keys
   and #KEY_LEFT
   beq :+
 
     ; Left is pressed.  Add to velocity.
     lda player_facing  ; Set the facing direction to flipped
-    ora #$40
+    and #<~$40         ; turn off bit 6, leave all others on
     sta player_facing
-
+    lda player_x
+    sec
+    sbc #$08
+    sta player_x
   :
+
+  lda new_keys
+  and #KEY_UP
+  beq :+
+
+    lda player_y
+    sec
+    sbc #$08
+    sta player_y
+  :
+
+  lda new_keys
+  and #KEY_DOWN
+  beq :+
+
+    lda player_y
+    clc
+    adc #$08
+    sta player_y
+  :
+
   ; In a real game, you'd respond to A, B, Up, Down, etc. here.
 
   ; Test for collision with side walls
 
   ; Additional checks for collision, if needed, would go here.
-  :
 
+  rts
 .endproc
 
 .proc draw_player_sprite
@@ -74,6 +102,9 @@ player_frame:     .res 1
   lda player_x
   sta OAM+3,x
 
+  inx
+  inx
+  inx
   inx
   stx oam_used
   rts
