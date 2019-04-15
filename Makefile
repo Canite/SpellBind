@@ -25,7 +25,7 @@ $(ODIR)/%.o: $(ODIR)/%.s
 
 objlistntsc = $(foreach o,$(objlist),$(ODIR)/$(o).o)
 
-map.txt $(title).nes: nrom128.cfg $(objlistntsc)
+map.txt $(title).nes: nrom256.cfg $(objlistntsc)
 	$(LD) -o $(title).nes -m map.txt -C $^
 
 $(ODIR)/main.o: $(ODIR)/background.chr $(ODIR)/sprite.chr
